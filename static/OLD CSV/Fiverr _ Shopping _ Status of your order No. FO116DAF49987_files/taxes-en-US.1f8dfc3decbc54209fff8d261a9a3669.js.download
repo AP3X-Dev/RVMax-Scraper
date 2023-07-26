@@ -1,0 +1,1 @@
+"undefined"!=typeof i18n?i18n.add({"en-US":{taxes:{vat:"VAT",il_vat:"VAT",gst:"GST",au_gst:"GST",us_sales:"Sales Tax",sales_tax:"Sales Tax",ru_vat:"VAT",in_gst:"GST",ae_vat:"VAT",za_vat:"VAT",mx_vat:"VAT",nz_gst:"GST",ca_gst:"GST",ca_hst:"HST",ca_qst:"QST",ng_vat:"VAT"}}}):setTimeout(function(){throw new Error("i18n is not defined 😭")});
