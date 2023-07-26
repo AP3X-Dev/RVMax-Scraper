@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <style>
+        /* General styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #1b1b1b;
+    color: #e0e0e0;
+}
+
+.menu-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #2b2b2b;
+    width: 200px;
+    height: 100vh;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-area {
+    background-color: #000000;
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+}
+
+.menu-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-container li {
+    padding: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.menu-container li.active-menu {
+    background-color: #444;
+    color: #fff;
+}
+
+.menu-container li:hover {
+    background-color: #333;
+}
+
+.menu-container li a {
+    text-decoration: none;
+    color: #ddd;
+}
+
+.menu-container li a:hover {
+    color: #ff0000;
+}
+
+.main-body-container {
+    margin-left: 200px; /* Adjust this value to match the width of the menu */
+    padding: 20px;
+}
+
+h1 {
+    color: #ff0000;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    margin-top: 30px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+    color: #ddd;
+}
+
+th {
+    background-color: none;
+    color: #fff;
+}
+
+tr:nth-child(even) {
+    background-color: #2b2b2b;
+}
+
+.removed-item td {
+    background-color: none;
+    color: red;
+}
+
+.added-item td{
+    background-color: none;
+    color: green;
+}
+
+.home-btn {
+    text-decoration: none;
+    background-color: #ff0000;
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: large;
+    border-radius: 5px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.home-btn:hover {
+    background-color: #ff3333;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+
+
+    </style>
+
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Function to fetch the updated list
+        function fetchList() {
+            $.ajax({
+                url: '/notify',
+                type: 'GET',
+                success: function(response) {
+                    if (response.flag === "false") {
+                        clearInterval(intervalId); // Stop the script execution
+                        return;
+                    }
+                    // Update the content on the web page
+                    var listData = response.data;
+                    var listHtml = '<table><tr><th>Product Name</th><th>Price</th><th>Status</th><th>Date</th><th>Browse Product</th></tr>';
+                    for (var i = 0; i < listData.length; i++) {
+                        if (listData[i].status === "Removed") {
+                            listHtml += '<tr class="removed-item"><td>' 
+                            + listData[i].Name + '</td><td>' + listData[i].Price+'</td><td>Removed</td><td>'+ listData[i].date +
+                                '</td><td><a class="home-btn" href='+listData[i].Product_URL +' target="_blank">Browse</a></td></tr>';
+                        } else if( listData[i].status === "Added"){
+                            listHtml += '<tr class="added-item"><td>' 
+                            + listData[i].Name + '</td><td>' + listData[i].Price+'</td><td>'+listData[i].status +'</td><td>'+ listData[i].date +
+                                '</td><td><a class="home-btn" href='+listData[i].Product_URL +' target="_blank">Browse</a></td></tr>';
+                        }
+                    }
+                    listHtml += '</table>';
+                    $('#list').html(listHtml);
+                    
+                    // Scroll to the bottom of the container
+                    var container = $('#result');
+                    container.scrollTop(container.prop("scrollHeight"));
+                    
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        // Call the fetchList function every 3 seconds
+        setInterval(fetchList, 1000); // Increased the interval to 3 seconds for better readability
+    });
+</script>
+
+
+</head>
+<body>
+    
+    <div class="menu-container">
+        <div class="logo-area"><img src="static/images/logo.png" width="150px"></div>
+        <ul>
+            <li ><a href="/dashboard">Dashboard </a></li>
+            <li ><a href="/products">Products</a></li>
+            <li class="active-menu">Notifications</li>
+        </ul>
+    </div>
+
+    <div class="main-body-container">
+        <h1>NOTIFICATIONS</h1>
+
+
+    <!-- <div class="message-area">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Product Name</th>
+                <th>Discount</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+            <tr class="removed-item">
+                <td>45697954</td>
+                <td>sample motorcyle product name 5575</td>
+                <td>53.5%</td>
+                <td>$55,655</td>
+                <td>UP<span style="font-size: 20px;">  &#128314;</span></td>
+                <td>07/03/2000</td>
+            </tr>
+        </table>
+      
+        <table>
+            <tr >
+                <th>ID</th>
+                <th>Product Name</th>
+                <th>Discount</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+            <tr class="added-item">
+                <td>45697954</td>
+                <td>sample motorcyle product name 5575</td>
+                <td>53.5%</td>
+                <td>$55,655</td>
+                <td>Down</td>
+                <td>07/03/2000</td>
+            </tr>
+        </table>
+    </div> -->
+    
+        <div id="result">
+            <div id="list"></div>
+
+        </div>
+    </div>
+</body>
+</html>
